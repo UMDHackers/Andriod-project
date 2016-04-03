@@ -25,6 +25,18 @@
         <activity
             android:name=".SignUpActivity"
             android:label="@string/title_activity_sign_up"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".GeneralPageActivity"
+            android:label="@string/title_activity_general_page"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".ViewVideoActivity"
+            android:label="@string/title_activity_view_image"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".ImageAdapter"
+            android:label="@string/title_activity_image_adapter"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
