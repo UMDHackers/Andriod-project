@@ -4,7 +4,7 @@ CMSC436 Final Project
 ##How to download this repo
 1. Download [git bash](https://git-scm.com/downloads) for your repespective OS
 2. When downloaded open it and navigate to a directory where you would like to store the project!
-3. Run the following command "git checkout https://github.com/UMDHackers/Andriod-project.git"
+3. Run the following command "git clone https://github.com/UMDHackers/Andriod-project.git"
 
 ##Getting new code
 1. Run "git pull" in the dir with the .git folder
