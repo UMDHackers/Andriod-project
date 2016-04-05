@@ -41,7 +41,7 @@
         android:id="@+id/login"
         android:layout_above="@+id/sign_up"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="120dp" />
+        android:layout_marginBottom="130dp" />
 
     <Button
         android:layout_width="wrap_content"
