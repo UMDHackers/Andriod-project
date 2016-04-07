@@ -71,7 +71,7 @@
         android:inputType="textPersonName"
         android:typeface="monospace"
         android:hint="username"
-        android:textColorHint="#bfbfbf"
+        android:textColorHint="#ffffff"
         android:textColor="#ffffff"
         android:ems="10"
         android:id="@+id/username"
@@ -83,13 +83,22 @@
         android:layout_height="wrap_content"
         android:inputType="textPassword"
         android:hint="password"
-        android:textColorHint="#bfbfbf"
+        android:textColorHint="#FFFFFF"
         android:textColor="#ffffff"
         android:ems="10"
         android:id="@+id/password"
         android:layout_above="@+id/login"
         android:layout_alignStart="@+id/username"
          />
+
+    <ImageView
+        android:src="@drawable/timelap_icon"
+        android:layout_width="100sp"
+        android:layout_height="100sp"
+        android:id="@+id/imageView3"
+        android:layout_above="@+id/username"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="51dp" />
 
 
 </RelativeLayout>
