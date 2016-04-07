@@ -2,31 +2,42 @@ package com.finalproject.cmsc436.timelap;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+
+import com.firebase.client.AuthData;
+import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
 
 public class MainActivity extends AppCompatActivity {
     Button mLogin, mSignUp;
+    private Firebase mFirebaseRef;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Firebase.setAndroidContext(this);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
         mLogin = (Button) findViewById(R.id.login);
         mSignUp = (Button) findViewById(R.id.sign_up);
+        mFirebaseRef = new Firebase("https://timelap.firebaseio.com");
+
+
 
         mLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, GeneralPageActivity.class);
-                startActivity(intent);
+                login();
             }
         });
 
@@ -60,5 +71,27 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void login(){
+        EditText emailTv = (EditText) findViewById(R.id.email);
+        EditText passwordTv = (EditText) findViewById(R.id.password);
+
+        String email = emailTv.getText().toString();
+        String password = passwordTv.getText().toString();
+
+        mFirebaseRef.authWithPassword(email, password, new Firebase.AuthResultHandler() {
+            @Override
+            public void onAuthenticated(AuthData authData) {
+                Toast.makeText(getApplicationContext(), "User ID: " + authData.getUid() + ", Provider: " + authData.getProvider(), Toast.LENGTH_LONG).show();
+                Intent i = new Intent(getApplicationContext(), GeneralPageActivity.class);
+                startActivity(i);
+            }
+
+            @Override
+            public void onAuthenticationError(FirebaseError firebaseError) {
+                Toast.makeText(getApplicationContext(), "Failed logging in.", Toast.LENGTH_LONG).show();
+            }
+        });
     }
 }

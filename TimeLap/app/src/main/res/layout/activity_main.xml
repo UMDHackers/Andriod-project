@@ -70,11 +70,11 @@
         android:layout_height="wrap_content"
         android:inputType="textPersonName"
         android:typeface="monospace"
-        android:hint="username"
+        android:hint="email"
         android:textColorHint="#bfbfbf"
         android:textColor="#ffffff"
         android:ems="10"
-        android:id="@+id/username"
+        android:id="@+id/email"
         android:layout_above="@+id/password"
         android:layout_centerHorizontal="true" />
 
@@ -88,7 +88,7 @@
         android:ems="10"
         android:id="@+id/password"
         android:layout_above="@+id/login"
-        android:layout_alignStart="@+id/username"
+        android:layout_alignStart="@+id/email"
          />
 
 

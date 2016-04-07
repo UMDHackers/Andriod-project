@@ -43,7 +43,8 @@
         android:ems="10"
         android:id="@+id/enter_username"
         android:layout_above="@+id/enter_email"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        />
 
 
     <EditText
@@ -86,7 +87,6 @@
         android:id="@+id/confirm_password"
         android:layout_below="@+id/enter_password"
         android:layout_alignStart="@+id/enter_password" />
-
 
 
 </RelativeLayout>
