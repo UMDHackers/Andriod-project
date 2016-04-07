@@ -70,13 +70,8 @@
         android:layout_height="wrap_content"
         android:inputType="textPersonName"
         android:typeface="monospace"
-<<<<<<< HEAD
         android:hint="email"
-        android:textColorHint="#bfbfbf"
-=======
-        android:hint="username"
         android:textColorHint="#ffffff"
->>>>>>> 06ee0520c8c179fba31389458d1d5abaf0cc4ff4
         android:textColor="#ffffff"
         android:ems="10"
         android:id="@+id/email"
@@ -101,7 +96,7 @@
         android:layout_width="100sp"
         android:layout_height="100sp"
         android:id="@+id/imageView3"
-        android:layout_above="@+id/username"
+        android:layout_above="@+id/email"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="51dp" />
 
