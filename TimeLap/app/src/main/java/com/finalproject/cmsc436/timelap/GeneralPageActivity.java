@@ -16,7 +16,8 @@ import java.util.Arrays;
 
 public class GeneralPageActivity extends AppCompatActivity {
     private ArrayList<Integer> mThumbnailsIdsPhotos = new ArrayList<Integer>(
-            Arrays.asList(R.drawable.ic_action_name, R.drawable.ic_action_name, R.drawable.ic_action_name)
+            Arrays.asList(R.drawable.ic_action_name, R.drawable.ic_action_name,
+                    R.drawable.ic_action_name, R.drawable.ic_action_name, R.drawable.ic_action_name)
     );
     protected static final String EXTRA_RES_ID = "POS";
     @Override
