@@ -1,8 +1,11 @@
 package com.finalproject.cmsc436.timelap;
 
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -10,6 +13,9 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.Toast;
+
+import com.firebase.client.Firebase;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,6 +26,12 @@ public class GeneralPageActivity extends AppCompatActivity {
                     R.drawable.ic_action_name, R.drawable.ic_action_name, R.drawable.ic_action_name)
     );
     protected static final String EXTRA_RES_ID = "POS";
+    private Firebase mFirebaseRef;
+    public static final String CAMERA_IMAGE_BUCKET_NAME =
+            Environment.getExternalStorageDirectory().toString()
+                    + "/DCIM/Camera";
+    public static final String CAMERA_IMAGE_BUCKET_ID = String.valueOf(CAMERA_IMAGE_BUCKET_NAME.toLowerCase().hashCode());
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,13 +70,28 @@ public class GeneralPageActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
+                Intent i = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivityForResult(i, 0);
             }
         });
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Firebase.setAndroidContext(this);
+        mFirebaseRef = new Firebase("https://timelap.firebaseio.com");
+        MediaStore.Video video;
+        if(resultCode == Activity.RESULT_OK) {
+           video = (MediaStore.Video) data.getExtras().get("data");
+            //mFirebaseRef.c
+            Toast.makeText(this, "uploaded", Toast.LENGTH_SHORT);
+        } else {
+            Toast.makeText(this, "Sorry video not uploadable", Toast.LENGTH_SHORT);
+        }
 
 
-
+    }
 }
