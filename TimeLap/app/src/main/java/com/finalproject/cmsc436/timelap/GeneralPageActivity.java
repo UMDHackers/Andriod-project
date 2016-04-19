@@ -3,6 +3,8 @@ package com.finalproject.cmsc436.timelap;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -70,10 +72,15 @@ public class GeneralPageActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-                Intent i = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                startActivityForResult(i, 0);
+                Intent intent;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                    intent.addCategory(Intent.CATEGORY_OPENABLE);
+                } else {
+                    intent = new Intent(Intent.ACTION_GET_CONTENT);
+                }
+                intent.setType("image/*");
+                startActivityForResult(intent, 3645);
             }
         });
     }
@@ -81,15 +88,15 @@ public class GeneralPageActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Firebase.setAndroidContext(this);
-        mFirebaseRef = new Firebase("https://timelap.firebaseio.com");
-        MediaStore.Video video;
-        if(resultCode == Activity.RESULT_OK) {
-           video = (MediaStore.Video) data.getExtras().get("data");
-            //mFirebaseRef.c
-            Toast.makeText(this, "uploaded", Toast.LENGTH_SHORT);
+        //Firebase.setAndroidContext(this);
+        //mFirebaseRef = new Firebase("https://timelap.firebaseio.com");
+        //AmazonS3Client s3Client = new AmazonS3Client( new BasicAWSCredentials( MY_ACCESS_KEY_ID, MY_SECRET_KEY ) );
+        if (requestCode == 3645 && resultCode == RESULT_OK && data != null) {
+            Uri selectedVideo = data.getData();
+//           // MediaStore.Video video = (MediaStore.Video) data.getExtras().get("data");
+            Toast.makeText(this, "uploaded", Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(this, "Sorry video not uploadable", Toast.LENGTH_SHORT);
+            Toast.makeText(this, "Sorry video not uploadable", Toast.LENGTH_SHORT).show();
         }
 
 
