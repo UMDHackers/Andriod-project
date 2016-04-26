@@ -1,48 +1,20 @@
 package com.finalproject.cmsc436.timelap;
 
 
-import android.app.Activity;
 import android.content.Intent;
-import android.media.MediaMetadataRetriever;
-import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.Toast;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import android.app.Activity;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.util.Log;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
 import com.dropbox.client2.DropboxAPI;
 import com.dropbox.client2.android.AndroidAuthSession;
-import com.dropbox.client2.session.AccessTokenPair;
 import com.dropbox.client2.session.AppKeyPair;
-import com.dropbox.client2.session.Session.AccessType;
-import com.dropbox.client2.session.TokenPair;
 import com.firebase.client.Firebase;
 
 import java.util.ArrayList;
@@ -95,10 +67,8 @@ public class GeneralPageActivity extends AppCompatActivity {
 
 
 
-
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+//        setSupportActionBar(toolbar);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -116,41 +86,41 @@ public class GeneralPageActivity extends AppCompatActivity {
             }
         });
         // MyActivity below should be your activity class name
-        mDBApi.getSession().startOAuth2Authentication(GeneralPageActivity.this);
+//        mDBApi.getSession().startOAuth2Authentication(GeneralPageActivity.this);
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        //Firebase.setAndroidContext(this);
-        //mFirebaseRef = new Firebase("https://timelap.firebaseio.com");
-        //AmazonS3Client s3Client = new AmazonS3Client( new BasicAWSCredentials( MY_ACCESS_KEY_ID, MY_SECRET_KEY ) );
-        if (requestCode == 3645 && resultCode == RESULT_OK && data != null) {
-            File file = new File(data.getData().getPath());
-            MediaStore.Video video = (MediaStore.Video) data.getExtras().get("data");
-            MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-
-            //use one of overloaded setDataSource() functions to set your data source
-            MediaPlayer mp = MediaPlayer.create(this, Uri.parse(data.getData().toString()));
-
-            retriever.setDataSource(getApplicationContext(), Uri.fromFile(file));
-            String time = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-            long timeInMillisec = Long.parseLong(time);
-            try {
-                FileInputStream fileInputStream = new FileInputStream(data.getData().getPath());
-                DropboxAPI.Entry response = mDBApi.putFile("/video1", fileInputStream, timeInMillisec, null, null);
-                Log.i("DbExampleLog", "The uploaded file's rev is: " + response.rev);
-            } catch (Exception e) {
-
-            }
-
-            Toast.makeText(this, "uploaded", Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(this, "Sorry video not uploadable", Toast.LENGTH_SHORT).show();
-        }
-
-
-    }
+//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//        //Firebase.setAndroidContext(this);
+//        //mFirebaseRef = new Firebase("https://timelap.firebaseio.com");
+//        //AmazonS3Client s3Client = new AmazonS3Client( new BasicAWSCredentials( MY_ACCESS_KEY_ID, MY_SECRET_KEY ) );
+//        if (requestCode == 3645 && resultCode == RESULT_OK && data != null) {
+//            File file = new File(data.getData().getPath());
+//            MediaStore.Video video = (MediaStore.Video) data.getExtras().get("data");
+//            MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+//
+//            //use one of overloaded setDataSource() functions to set your data source
+//            MediaPlayer mp = MediaPlayer.create(this, Uri.parse(data.getData().toString()));
+//
+//            retriever.setDataSource(getApplicationContext(), Uri.fromFile(file));
+//            String time = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+//            long timeInMillisec = Long.parseLong(time);
+//            try {
+//                FileInputStream fileInputStream = new FileInputStream(data.getData().getPath());
+//                DropboxAPI.Entry response = mDBApi.putFile("/video1", fileInputStream, timeInMillisec, null, null);
+//                Log.i("DbExampleLog", "The uploaded file's rev is: " + response.rev);
+//            } catch (Exception e) {
+//
+//            }
+//
+//            Toast.makeText(this, "uploaded", Toast.LENGTH_SHORT).show();
+//        } else {
+//            Toast.makeText(this, "Sorry video not uploadable", Toast.LENGTH_SHORT).show();
+//        }
+//
+//
+//    }
 
     protected void onResume() {
         super.onResume();
