@@ -6,4 +6,5 @@
     <string name="title_activity_general_page">GeneralPageActivity</string>
     <string name="title_activity_view_image">ViewImageActivity</string>
     <string name="title_activity_image_adapter">ImageAdapter</string>
+    <string name="title_activity_profile">ProfileActivity</string>
 </resources>

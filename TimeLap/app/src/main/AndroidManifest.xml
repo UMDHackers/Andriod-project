@@ -4,7 +4,6 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
 
-
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -26,25 +25,28 @@
             android:label="@string/title_activity_sign_up"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".GeneralPageActivity"
-            android:label="@string/title_activity_general_page"
-            android:theme="@style/AppTheme.NoActionBar"
-        />
-        <activity
             android:name=".ViewVideoActivity"
             android:label="@string/title_activity_view_image"
-            android:theme="@style/AppTheme.NoActionBar" >
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".GeneralPageActivity"
+            android:label="@string/title_activity_general_page"
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
+
                 <!-- Change this to be db- followed by your app key -->
                 <data android:scheme="db-1lxkdtav23yh3nf" />
 
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.BROWSABLE" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".ProfileActivity"
+            android:label="@string/title_activity_profile"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
-
-
 
 </manifest>

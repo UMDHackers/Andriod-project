@@ -141,7 +141,7 @@ public class GeneralPageActivity extends AppCompatActivity {
                 DropboxAPI.Entry response = mDBApi.putFile("/video1", fileInputStream, timeInMillisec, null, null);
                 Log.i("DbExampleLog", "The uploaded file's rev is: " + response.rev);
             } catch (Exception e) {
-                
+
             }
 
             Toast.makeText(this, "uploaded", Toast.LENGTH_SHORT).show();
