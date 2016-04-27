@@ -8,24 +8,25 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.MediaController;
+import android.widget.VideoView;
 
 public class ViewVideoActivity extends AppCompatActivity {
 
+    VideoView vid;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        setContentView(R.layout.video_view);
 
         // Get the Intent used to start this Activity
         Intent intent = getIntent();
 
-        // Make a new ImageView
-        ImageView imageView = new ImageView(getApplicationContext());
-
-        // Get the ID of the image to display and set it as the image for this ImageView
-        imageView.setImageResource(intent.getIntExtra(GeneralPageActivity.EXTRA_RES_ID, 0));
-
-        setContentView(imageView);
+        vid = (VideoView) findViewById(R.id.videoView);
+        vid.setVideoPath(intent.getStringExtra("POS"));
+        vid.setMediaController(new MediaController(this));
+        vid.start();
+        vid.requestFocus();
     }
 
 }

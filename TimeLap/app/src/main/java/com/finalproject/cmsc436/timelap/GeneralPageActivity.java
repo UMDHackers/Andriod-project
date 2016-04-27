@@ -22,9 +22,14 @@ import java.util.Arrays;
 
 public class GeneralPageActivity extends AppCompatActivity {
     private ArrayList<Integer> mThumbnailsIdsPhotos = new ArrayList<Integer>(
-            Arrays.asList(R.drawable.ic_action_name, R.drawable.ic_action_name,
-                    R.drawable.ic_action_name, R.drawable.ic_action_name, R.drawable.ic_action_name)
+            Arrays.asList(R.drawable.street, R.drawable.mount,
+                    R.drawable.star, R.drawable.sun)
     );
+    private ArrayList<String> videoPaths = new ArrayList<String >(
+            Arrays.asList("*/sdcard/City.mp4", "/sdcard/Download/Mountain.mp4",
+                    "/sdcard/Download/Stars.mp4", "/sdcard/Download/Sun.mp4")
+    );
+
     protected static final String EXTRA_RES_ID = "POS";
     private Firebase mFirebaseRef;
     public static final String CAMERA_IMAGE_BUCKET_NAME =
@@ -51,7 +56,7 @@ public class GeneralPageActivity extends AppCompatActivity {
                         ViewVideoActivity.class);
 
                 // Add the ID of the thumbnail to display as an Intent Extra
-                intent.putExtra(EXTRA_RES_ID, (int) id);
+                intent.putExtra(EXTRA_RES_ID, videoPaths.get(position));
 
                 // Start the ImageViewActivity
                 startActivity(intent);
@@ -81,7 +86,7 @@ public class GeneralPageActivity extends AppCompatActivity {
                 } else {
                     intent = new Intent(Intent.ACTION_GET_CONTENT);
                 }
-                intent.setType("video/*");
+                intent.setType("*/sdcard/Download");
                 startActivityForResult(intent, 3645);
             }
         });
