@@ -26,6 +26,8 @@ public class TabManager extends TabActivity {
         //ImageView Setup
         ImageView homeIcon = new ImageView(this);
         homeIcon.setImageResource(R.drawable.home);
+        ImageView uploadIcon = new ImageView(this);
+        uploadIcon.setImageResource(R.drawable.camara);
         ImageView profileIcon = new ImageView(this);
         profileIcon.setImageResource(R.drawable.profile);
 
@@ -33,16 +35,14 @@ public class TabManager extends TabActivity {
         tab1.setIndicator(homeIcon);
         tab1.setContent(new Intent(this, GeneralPageActivity.class));
 
+        Intent profileIntent = new Intent(this, ProfileActivity.class);
+        profileIntent.putExtra("email", getIntent().getStringExtra("email"));
         tab2.setIndicator(profileIcon);
-        tab2.setContent(new Intent(this, ProfileActivity.class));
-
-        tab3.setIndicator("Tab3");
-        tab3.setContent(new Intent(this, ProfileActivity.class));
+        tab2.setContent(profileIntent);
 
         /** Add the tabs  to the TabHost to display. */
         tabHost.addTab(tab1);
         tabHost.addTab(tab2);
-        tabHost.addTab(tab3);
     }
 
     @Override

@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
         EditText emailTv = (EditText) findViewById(R.id.email);
         EditText passwordTv = (EditText) findViewById(R.id.password);
 
-        String email = emailTv.getText().toString();
+        final String email = emailTv.getText().toString();
         String password = passwordTv.getText().toString();
 
         mFirebaseRef.authWithPassword(email, password, new Firebase.AuthResultHandler() {
@@ -81,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
             public void onAuthenticated(AuthData authData) {
                 Toast.makeText(getApplicationContext(), "User login successfully.", Toast.LENGTH_LONG).show();
                 Intent i = new Intent(getApplicationContext(), TabManager.class);
+                i.putExtra("email", email);
                 startActivity(i);
             }
 
