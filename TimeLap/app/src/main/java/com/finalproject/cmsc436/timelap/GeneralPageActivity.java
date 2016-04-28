@@ -11,12 +11,14 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.Toast;
 
 import com.dropbox.client2.DropboxAPI;
 import com.dropbox.client2.android.AndroidAuthSession;
 import com.dropbox.client2.session.AppKeyPair;
 import com.firebase.client.Firebase;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -64,13 +66,6 @@ public class GeneralPageActivity extends AppCompatActivity {
         });
 
 
-        // And later in some initialization function:
-        AppKeyPair appKeys = new AppKeyPair(APP_KEY, APP_SECRET);
-        AndroidAuthSession session = new AndroidAuthSession(appKeys);
-        mDBApi = new DropboxAPI<AndroidAuthSession>(session);
-
-
-
 
 //        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 //        setSupportActionBar(toolbar);
@@ -90,55 +85,22 @@ public class GeneralPageActivity extends AppCompatActivity {
                 startActivityForResult(intent, 3645);
             }
         });
-        // MyActivity below should be your activity class name
-//        mDBApi.getSession().startOAuth2Authentication(GeneralPageActivity.this);
     }
 
     @Override
-//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//        //Firebase.setAndroidContext(this);
-//        //mFirebaseRef = new Firebase("https://timelap.firebaseio.com");
-//        //AmazonS3Client s3Client = new AmazonS3Client( new BasicAWSCredentials( MY_ACCESS_KEY_ID, MY_SECRET_KEY ) );
-//        if (requestCode == 3645 && resultCode == RESULT_OK && data != null) {
-//            File file = new File(data.getData().getPath());
-//            MediaStore.Video video = (MediaStore.Video) data.getExtras().get("data");
-//            MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-//
-//            //use one of overloaded setDataSource() functions to set your data source
-//            MediaPlayer mp = MediaPlayer.create(this, Uri.parse(data.getData().toString()));
-//
-//            retriever.setDataSource(getApplicationContext(), Uri.fromFile(file));
-//            String time = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-//            long timeInMillisec = Long.parseLong(time);
-//            try {
-//                FileInputStream fileInputStream = new FileInputStream(data.getData().getPath());
-//                DropboxAPI.Entry response = mDBApi.putFile("/video1", fileInputStream, timeInMillisec, null, null);
-//                Log.i("DbExampleLog", "The uploaded file's rev is: " + response.rev);
-//            } catch (Exception e) {
-//
-//            }
-//
-//            Toast.makeText(this, "uploaded", Toast.LENGTH_SHORT).show();
-//        } else {
-//            Toast.makeText(this, "Sorry video not uploadable", Toast.LENGTH_SHORT).show();
-//        }
-//
-//
-//    }
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 3645 && resultCode == RESULT_OK && data != null) {
+            File file = new File(data.getData().getPath());
+            Toast.makeText(this, "uploaded", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "Sorry video not uploadable", Toast.LENGTH_SHORT).show();
+        }
+
+
+    }
 
     protected void onResume() {
         super.onResume();
-
-        if (mDBApi.getSession().authenticationSuccessful()) {
-            try {
-                // Required to complete auth, sets the access token on the session
-                mDBApi.getSession().finishAuthentication();
-
-                String accessToken = mDBApi.getSession().getOAuth2AccessToken();
-            } catch (IllegalStateException e) {
-                Log.i("DbAuthLog", "Error authenticating", e);
-            }
-        }
     }
 }

@@ -17,13 +17,15 @@
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin"
         android:paddingTop="@dimen/activity_vertical_margin"
+
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         tools:context="com.finalproject.cmsc436.timelap.ProfileActivity"
         tools:showIn="@layout/activity_profile">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id= "@+id/line" >
+            android:id= "@+id/line"
+            android:paddingBottom="30dp">
             <ImageView
                 android:layout_width="350px"
                 android:layout_height="350px"
@@ -68,6 +70,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        android:src="@android:drawable/ic_dialog_email" />
+        android:src="@android:drawable/ic_menu_upload" />
 
 </android.support.design.widget.CoordinatorLayout>

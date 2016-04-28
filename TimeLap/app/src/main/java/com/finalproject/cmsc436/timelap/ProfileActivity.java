@@ -1,6 +1,7 @@
 package com.finalproject.cmsc436.timelap;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -9,7 +10,9 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -57,10 +60,30 @@ public class ProfileActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                Intent intent;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                    intent.addCategory(Intent.CATEGORY_OPENABLE);
+                } else {
+                    intent = new Intent(Intent.ACTION_GET_CONTENT);
+                }
+                intent.setType("*/sdcard/Download");
+                startActivityForResult(intent, 3645);
             }
         });
     }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 3645 && resultCode == RESULT_OK && data != null) {
+            File file = new File(data.getData().getPath());
+            Toast.makeText(this, "uploaded", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "Sorry video not uploadable", Toast.LENGTH_SHORT).show();
+        }
+
+
+    }
+
 
 }
