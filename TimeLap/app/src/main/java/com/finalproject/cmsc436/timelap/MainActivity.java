@@ -28,8 +28,6 @@ public class MainActivity extends AppCompatActivity {
         mSignUp = (Button) findViewById(R.id.sign_up);
         mFirebaseRef = new Firebase("https://timelap.firebaseio.com");
 
-
-
         mLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
