@@ -30,6 +30,7 @@ public class ProfileActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
+        //Got through main thumbnails ones and add the photos based on user, so go through whole list of images
 
         TextView emailView = (TextView) findViewById(R.id.profile_email);
 
@@ -45,7 +46,7 @@ public class ProfileActivity extends AppCompatActivity {
                 //Create an Intent to start the ImageViewActivity
                 Intent intent = new Intent(ProfileActivity.this,
                         ViewVideoActivity.class);
-
+                //same idea here as in the general page idea
                 // Add the ID of the thumbnail to display as an Intent Extra
                 intent.putExtra("POS", videoPaths.get(position));
 

@@ -18,15 +18,9 @@ public class ViewVideoActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.video_view);
+        //Get a fire base ref to get the photos and decode them and then send them to the surface view
+        //Need to set up slideshow in andriod for the photos
 
-        // Get the Intent used to start this Activity
-        Intent intent = getIntent();
-
-        vid = (VideoView) findViewById(R.id.videoView);
-        vid.setVideoPath(intent.getStringExtra("POS"));
-        vid.setMediaController(new MediaController(this));
-        vid.start();
-        vid.requestFocus();
     }
 
 }
