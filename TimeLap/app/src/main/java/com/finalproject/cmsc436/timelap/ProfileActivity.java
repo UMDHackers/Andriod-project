@@ -6,9 +6,11 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -16,7 +18,23 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import com.firebase.client.AuthData;
+import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+
+import java.io.File;
+import android.graphics.*;
+import java.io.*;
+import android.util.Base64;
+
 public class ProfileActivity extends AppCompatActivity {
+
+    private final String TAG = "ProfileActivity";
+    private final int UPLOAD_PROFILE_IMAGE = 1;
+
+    private Firebase mFirebaseRef;
+    private String email;
+
     private ArrayList<Integer> mProfileIds = new ArrayList<Integer>(
             Arrays.asList(R.drawable.street, R.drawable.mount,
                     R.drawable.star, R.drawable.sun)
@@ -26,15 +44,26 @@ public class ProfileActivity extends AppCompatActivity {
                     "/sdcard/Download/Stars.mp4", "/sdcard/Download/Sun.mp4")
     );
 
+    public String getEmail() {
+        return email;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
         //Got through main thumbnails ones and add the photos based on user, so go through whole list of images
 
-        TextView emailView = (TextView) findViewById(R.id.profile_email);
+        // initialize Firebase
+        mFirebaseRef = new Firebase("https://timelap.firebaseio.com");
 
-        emailView.setText(getIntent().getStringExtra("email"));
+        // initialize UI components
+        TextView emailView = (TextView) findViewById(R.id.profile_email);
+        ImageView profileImage = (ImageView) findViewById(R.id.user_img);
+
+        // set email textView
+        email = getIntent().getStringExtra("email");
+        emailView.setText(email);
 
         GridView gridView = (GridView) findViewById(R.id.gridView);
         gridView.setAdapter(new ImageAdapter(this, mProfileIds));
@@ -52,6 +81,46 @@ public class ProfileActivity extends AppCompatActivity {
 
                 // Start the ImageViewActivity
                 startActivity(intent);
+            }
+        });
+
+        // if user selects the profile image
+        profileImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i(TAG, "profile image clicked");
+
+                Intent intent;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                    intent.addCategory(Intent.CATEGORY_OPENABLE);
+                } else {
+                    intent = new Intent(Intent.ACTION_GET_CONTENT);
+                }
+
+                intent.setType("*/sdcard/Download");
+                startActivityForResult(intent, UPLOAD_PROFILE_IMAGE);
+
+                /*
+
+                // retrieves current UID
+                AuthData authData = mFirebaseRef.getAuth();
+                Firebase userRef = mFirebaseRef.child("users").child(authData.getUid());
+
+                Log.i(TAG, "the UID is " + authData.getUid());
+
+                Bitmap bmp = BitmapFactory.decodeFile("/sdcard/Download/ben.jpg");
+                ByteArrayOutputStream bYtE = new ByteArrayOutputStream();
+                bmp.compress(Bitmap.CompressFormat.JPEG, 100, bYtE);
+                bmp.recycle();
+
+                byte[] byteArray = bYtE.toByteArray();
+                String imageFile = Base64.encodeToString(byteArray, Base64.DEFAULT);
+
+                userRef.child("fullName").setValue("Alan Turing");
+                userRef.child("image").setValue(imageFile);
+
+*/
             }
         });
 
@@ -76,9 +145,17 @@ public class ProfileActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
         if (requestCode == 3645 && resultCode == RESULT_OK && data != null) {
             File file = new File(data.getData().getPath());
             Toast.makeText(this, "uploaded", Toast.LENGTH_SHORT).show();
+
+        } else if (requestCode == UPLOAD_PROFILE_IMAGE && resultCode == RESULT_OK && data != null) {
+            //File file = new File(data.getData().getPath());
+            Log.i(TAG, "path is " + data.getData().getPath());
+
+
+
         } else {
             Toast.makeText(this, "Sorry video not uploadable", Toast.LENGTH_SHORT).show();
         }
