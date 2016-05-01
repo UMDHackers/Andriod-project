@@ -20,14 +20,11 @@ public class TabManager extends TabActivity {
 
         TabHost.TabSpec tab1 = tabHost.newTabSpec("Home");
         TabHost.TabSpec tab2 = tabHost.newTabSpec("Profile");
-        TabHost.TabSpec tab3 = tabHost.newTabSpec("Third tab");
 
 
         //ImageView Setup
         ImageView homeIcon = new ImageView(this);
         homeIcon.setImageResource(R.drawable.home);
-        ImageView uploadIcon = new ImageView(this);
-        uploadIcon.setImageResource(R.drawable.camara);
         ImageView profileIcon = new ImageView(this);
         profileIcon.setImageResource(R.drawable.profile);
 
@@ -36,7 +33,7 @@ public class TabManager extends TabActivity {
         tab1.setContent(new Intent(this, GeneralPageActivity.class));
 
         Intent profileIntent = new Intent(this, ProfileActivity.class);
-        profileIntent.putExtra("email", getIntent().getStringExtra("email"));
+        profileIntent.putExtra("uid", getIntent().getStringExtra("uid"));
         tab2.setIndicator(profileIcon);
         tab2.setContent(profileIntent);
 

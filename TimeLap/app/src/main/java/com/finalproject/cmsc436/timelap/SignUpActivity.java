@@ -10,7 +10,6 @@ import android.widget.Toast;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class SignUpActivity extends AppCompatActivity {
@@ -58,14 +57,12 @@ public class SignUpActivity extends AppCompatActivity {
         mFirebaseRef.createUser(mEmail, mPassword, new Firebase.ValueResultHandler<Map<String, Object>>() {
             @Override
             public void onSuccess(Map<String, Object> result) {
+                String userID = result.get("uid") + "";
+                Firebase usersRef = mFirebaseRef.child("users").child(userID);
+                usersRef.child("username").setValue(mUsername);
+                usersRef.child("email").setValue(mEmail);
+                usersRef.child("password").setValue(mPassword);
                 Toast.makeText(getApplicationContext(), "Successfully created user account", Toast.LENGTH_LONG).show();
-                Firebase usersRef = mFirebaseRef.child("users");
-                Map<String, String> info = new HashMap<String, String>();
-                info.put("password", mPassword);
-                info.put("name", mUsername);
-                Map<String, Object> ret = new HashMap<String, Object>();
-                ret.put(mEmail, info);
-                usersRef.updateChildren(ret);
                 finish();
 
             }

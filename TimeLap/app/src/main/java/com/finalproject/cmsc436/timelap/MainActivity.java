@@ -77,9 +77,9 @@ public class MainActivity extends AppCompatActivity {
         mFirebaseRef.authWithPassword(email, password, new Firebase.AuthResultHandler() {
             @Override
             public void onAuthenticated(AuthData authData) {
-                Toast.makeText(getApplicationContext(), "User login successfully.", Toast.LENGTH_LONG).show();
+//                Toast.makeText(getApplicationContext(), "User login successfully.", Toast.LENGTH_LONG).show();
                 Intent i = new Intent(getApplicationContext(), TabManager.class);
-                i.putExtra("email", email);
+                i.putExtra("uid", authData.getUid());
                 startActivity(i);
             }
 

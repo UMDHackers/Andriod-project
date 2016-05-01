@@ -43,6 +43,15 @@
                     android:id="@+id/profile_email"
                     android:paddingLeft="40px"
                     />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Username"
+                    android:id="@+id/profile_username"
+                    android:paddingLeft="40px"
+                    android:layout_below="@+id/profile_email"
+                    android:layout_alignParentStart="true"/>
+
             </RelativeLayout>
         </LinearLayout>
 

@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -14,18 +13,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.firebase.client.DataSnapshot;
+import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
-
-import com.firebase.client.AuthData;
-import com.firebase.client.Firebase;
-import com.firebase.client.FirebaseError;
-
-import java.io.File;
-import android.graphics.*;
-import java.io.*;
-import android.util.Base64;
 
 public class ProfileActivity extends AppCompatActivity {
 
@@ -33,7 +28,7 @@ public class ProfileActivity extends AppCompatActivity {
     private final int UPLOAD_PROFILE_IMAGE = 1;
 
     private Firebase mFirebaseRef;
-    private String email;
+    private String mUserID, mUsername, mEmail;
 
     private ArrayList<Integer> mProfileIds = new ArrayList<Integer>(
             Arrays.asList(R.drawable.street, R.drawable.mount,
@@ -44,9 +39,6 @@ public class ProfileActivity extends AppCompatActivity {
                     "/sdcard/Download/Stars.mp4", "/sdcard/Download/Sun.mp4")
     );
 
-    public String getEmail() {
-        return email;
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,13 +49,32 @@ public class ProfileActivity extends AppCompatActivity {
         // initialize Firebase
         mFirebaseRef = new Firebase("https://timelap.firebaseio.com");
 
-        // initialize UI components
-        TextView emailView = (TextView) findViewById(R.id.profile_email);
+        // Retrieve the uid from previous activities intent
+        mUserID = getIntent().getStringExtra("uid");
+
+        // Set the TextView.
+        mFirebaseRef.child("users").child(mUserID).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // NOTE: this is a callback method, you won't be able to save the data outside the scope.
+                mEmail = dataSnapshot.child("email").getValue() + "";
+                mUsername = (dataSnapshot.child("username").getValue() + "").toUpperCase();
+                TextView emailView = (TextView) findViewById(R.id.profile_email);
+                TextView usernameView = (TextView) findViewById(R.id.profile_username);
+                emailView.setText(mEmail);
+                usernameView.setText(mUsername);
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+                Toast.makeText(getApplicationContext(), "user info not found", Toast.LENGTH_LONG).show();
+            }
+        });
+
+
         ImageView profileImage = (ImageView) findViewById(R.id.user_img);
 
-        // set email textView
-        email = getIntent().getStringExtra("email");
-        emailView.setText(email);
+
 
         GridView gridView = (GridView) findViewById(R.id.gridView);
         gridView.setAdapter(new ImageAdapter(this, mProfileIds));
