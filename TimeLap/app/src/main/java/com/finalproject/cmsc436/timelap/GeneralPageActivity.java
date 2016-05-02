@@ -40,6 +40,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -57,6 +58,7 @@ public class GeneralPageActivity extends AppCompatActivity {
     private Firebase mFirebaseRef;
     private String mUsername;
     private  GridView gridView;
+    private ArrayList<String> mkey = new ArrayList<String>();
     private ArrayList<Bitmap> list = new ArrayList<Bitmap>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,6 +97,7 @@ public class GeneralPageActivity extends AppCompatActivity {
                     String key = (String) postSnapshot.getKey();
                     mThumbnailsIdsPhotos.put(key, temp_bit);
                     mThumbnailsIdsUsers.put(key, user);
+                    mkey.add(key);
                     list.add(temp_bit);
                 }
                 System.out.println("LIST SIZE " + list.size());
@@ -124,6 +127,10 @@ public class GeneralPageActivity extends AppCompatActivity {
                 // Add the ID of the thumbnail to display as an Intent Extra
                 //intent.putExtra(EXTRA_RES_ID, videoPaths.get(position));
                 //GET THE IMAGE AND THEN IDS (USERS AND PHOTOIDS) WITH THE POSTIONS
+                String temp_key = mkey.get(position);
+                String user = mThumbnailsIdsUsers.get(temp_key);
+                intent.putExtra("Key", temp_key);
+                intent.putExtra("User", user);
 
                 // Start the ImageViewActivity
                 startActivity(intent);
@@ -153,6 +160,7 @@ public class GeneralPageActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
         if (requestCode == 3645 && resultCode == RESULT_OK && data != null) {
             String[] filePathColumn = {MediaStore.Images.Media.DATA};
             imagesEncodedList = new ArrayList<String>();
@@ -197,6 +205,7 @@ public class GeneralPageActivity extends AppCompatActivity {
         @Override
         protected Void doInBackground(String... params) {
             //Send the photos to the firebase
+
             Firebase pdir = mFirebaseRef.child("Images");
             Firebase mainpage = mFirebaseRef.child("FrontPage");
             Map<String, String> photos = new HashMap<String, String>();
