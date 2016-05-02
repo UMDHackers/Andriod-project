@@ -31,7 +31,6 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 
 public class ProfileActivity extends AppCompatActivity {
 
@@ -63,10 +62,9 @@ public class ProfileActivity extends AppCompatActivity {
         mFirebaseRef = new Firebase("https://timelap.firebaseio.com");
 
         // Retrieve the uid from previous activities intent
-//        mUserID = getIntent().getStringExtra("uid");
+        mUserID = getIntent().getStringExtra("uid");
 
         // Set the TextView.
-
         mFirebaseRef.child("users").child(mUserID).addValueEventListener(new ValueEventListener() {
 
             @Override
@@ -89,25 +87,24 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
 
-//        GridView gridView = (GridView) findViewById(R.id.gridView);
-//        gridView.setAdapter(new ImageAdapter(this, mProfile));
-//
-//        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            public void onItemClick(AdapterView<?> parent, View v,
-//                                    int position, long id) {
-//
-//                //Create an Intent to start the ImageViewActivity
-//                Intent intent = new Intent(ProfileActivity.this,
-//                        ViewVideoActivity.class);
-//                //same idea here as in the general page idea
-//                // Add the ID of the thumbnail to display as an Intent Extra
-//                intent.putExtra("POS", videoPaths.get(position));
-//
-//                // Start the ImageViewActivity
-//                startActivity(intent);
-//            }
-//        });
+        GridView gridView = (GridView) findViewById(R.id.gridView);
+        //gridView.setAdapter(new ImageAdapter(this, mProfileIds));
 
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View v,
+                                    int position, long id) {
+
+                //Create an Intent to start the ImageViewActivity
+                Intent intent = new Intent(ProfileActivity.this,
+                        ViewVideoActivity.class);
+                //same idea here as in the general page idea
+                // Add the ID of the thumbnail to display as an Intent Extra
+                intent.putExtra("POS", videoPaths.get(position));
+
+                // Start the ImageViewActivity
+                startActivity(intent);
+            }
+        });
 
         // initialize the view
         mProfileImage = (ImageView) findViewById(R.id.user_img);
@@ -127,7 +124,6 @@ public class ProfileActivity extends AppCompatActivity {
                 startActivityForResult(photoPickerIntent, UPLOAD_PROFILE_IMAGE);
             }
         });
-
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
