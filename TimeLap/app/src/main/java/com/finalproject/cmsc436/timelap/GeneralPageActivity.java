@@ -64,7 +64,7 @@ public class GeneralPageActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_general_page);
-
+        list.clear();
         //Here is where the firebase will download the photos
         //Firebase ref = mFirebaseRef.child("mainpage");
         //Get all the childern of the mainpage
@@ -209,11 +209,14 @@ public class GeneralPageActivity extends AppCompatActivity {
             Firebase pdir = mFirebaseRef.child("Images");
             Firebase mainpage = mFirebaseRef.child("FrontPage");
             Map<String, String> photos = new HashMap<String, String>();
-            photos.put("0", params[0]);
-            photos.put("1", params[1]);
-            photos.put("2", params[2]);
-            photos.put("3", params[3]);
-            photos.put("4", params[4]);
+//            photos.put("0", params[0]);
+//            photos.put("1", params[1]);
+//            photos.put("2", params[2]);
+//            photos.put("3", params[3]);
+//            photos.put("4", params[4]);
+            for(int x =0 ; x <params.length; x++) {
+                photos.put(x+"", params[x]);
+            }
             AuthData authData = mFirebaseRef.getAuth();
             Map<String, String> thumbnail = new HashMap<String, String>();
             //Thumbnail
@@ -245,8 +248,8 @@ public class GeneralPageActivity extends AppCompatActivity {
         @Override
         protected String[] doInBackground(ArrayList<Uri>... params) {
             try {
-                String[] array = new String[5];
-                for(int x = 0; x < 5; x++) {
+                String[] array = new String[params[0].size()];
+                for(int x = 0; x < params[0].size(); x++) {
                     String path = params[0].get(x).getLastPathSegment();
                     path = path.substring(path.indexOf("/"));
                     path = "/storage/emulated/0/document" + path;
