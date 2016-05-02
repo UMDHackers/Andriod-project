@@ -24,7 +24,11 @@ import android.widget.Toast;
 import com.dropbox.client2.DropboxAPI;
 import com.dropbox.client2.android.AndroidAuthSession;
 import com.dropbox.client2.session.AppKeyPair;
+import com.firebase.client.AuthData;
+import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
 
 import junit.framework.Assert;
 
@@ -40,14 +44,8 @@ import java.util.List;
 import java.util.Map;
 
 public class GeneralPageActivity extends AppCompatActivity {
-    private ArrayList<Integer> mThumbnailsIdsPhotos = new ArrayList<Integer>(
-            Arrays.asList(R.drawable.street, R.drawable.mount,
-                    R.drawable.star, R.drawable.sun)
-    );
-    private ArrayList<String> videoPaths = new ArrayList<String >(
-            Arrays.asList("*/sdcard/City.mp4", "/sdcard/Download/Mountain.mp4",
-                    "/sdcard/Download/Stars.mp4", "/sdcard/Download/Sun.mp4")
-    );
+    private HashMap<String, Bitmap> mThumbnailsIdsPhotos = new HashMap<String, Bitmap>();
+    private HashMap<String, String> mThumbnailsIdsUsers = new HashMap<String, String>();
 
     protected static final String EXTRA_RES_ID = "POS";
     public static final String CAMERA_IMAGE_BUCKET_NAME =
@@ -57,6 +55,9 @@ public class GeneralPageActivity extends AppCompatActivity {
     List<String> imagesEncodedList;
     public static final String CAMERA_IMAGE_BUCKET_ID = String.valueOf(CAMERA_IMAGE_BUCKET_NAME.toLowerCase().hashCode());
     private Firebase mFirebaseRef;
+    private String mUsername;
+    private  GridView gridView;
+    private ArrayList<Bitmap> list = new ArrayList<Bitmap>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,15 +67,50 @@ public class GeneralPageActivity extends AppCompatActivity {
         //Firebase ref = mFirebaseRef.child("mainpage");
         //Get all the childern of the mainpage
         //loop through the strings and decode them decodeBase64() AND ADD THEM TO THE GRID VIEW
+        String mUserID = getIntent().getStringExtra("uid");
 
 
 
 
-
-        GridView gridView = (GridView) findViewById(R.id.gridView);
-        gridView.setAdapter(new ImageAdapter(this, mThumbnailsIdsPhotos));
+        gridView = (GridView) findViewById(R.id.gridView);
+//        Firebase thumbnails = mFirebaseRef.child("FrontPage");
+//        for(int x = 0; x< size of the thumbnails; x++) {
+//        get the thumbnails
+//        decode the strings
+//        mThumbnailsIdsPhotos.add();
+//        MAKE A LIST OF THE IDS AND USR IDS
+//        }
+        //GET ALL THUMBNAILS
+        mFirebaseRef = new Firebase("https://timelap.firebaseio.com/");
         Firebase.setAndroidContext(this);
-        Firebase myFirebaseRef = new Firebase("https://timelap.firebaseio.com/");
+        Firebase thumbs  = mFirebaseRef.child("FrontPage");
+        thumbs.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                    System.out.println("postshot " + postSnapshot.getKey());
+                    String temp = (String) postSnapshot.child("Encoded").getValue();
+                    Bitmap temp_bit = decodeBase64(temp);
+                    String user = (String) postSnapshot.child("User").getValue();
+                    String key = (String) postSnapshot.getKey();
+                    mThumbnailsIdsPhotos.put(key, temp_bit);
+                    mThumbnailsIdsUsers.put(key, user);
+                    list.add(temp_bit);
+                }
+                System.out.println("LIST SIZE " + list.size());
+                gridView.setAdapter(new ImageAdapter(GeneralPageActivity.this, list));
+
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+            }
+        });
+//        try {
+//            Thread.sleep(4000);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
 
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v,
@@ -84,9 +120,10 @@ public class GeneralPageActivity extends AppCompatActivity {
                 Intent intent = new Intent(GeneralPageActivity.this,
                         ViewVideoActivity.class);
 
-                //HERE GET THE ID OF THE FULL VIDEO SO THAT YOU CAN ACCESS IT LATER, FROM MAIN PAGE FULL VIDEOS
+                //HERE GET THE ID OF THE thubmnail clicked
                 // Add the ID of the thumbnail to display as an Intent Extra
-                intent.putExtra(EXTRA_RES_ID, videoPaths.get(position));
+                //intent.putExtra(EXTRA_RES_ID, videoPaths.get(position));
+                //GET THE IMAGE AND THEN IDS (USERS AND PHOTOIDS) WITH THE POSTIONS
 
                 // Start the ImageViewActivity
                 startActivity(intent);
@@ -145,9 +182,9 @@ public class GeneralPageActivity extends AppCompatActivity {
         downloadTask.execute(urisArrayList);
         try {
             String[] encoded = downloadTask.get();
-     //       SendToFireBase task = new SendToFireBase();
-     //       task.execute(encoded);
-     //      task.get();
+            SendToFireBase task = new SendToFireBase();
+            task.execute(encoded);
+            task.get();
 
             //Set up a async task to send the files to the
         } catch (Exception e) {
@@ -160,14 +197,28 @@ public class GeneralPageActivity extends AppCompatActivity {
         @Override
         protected Void doInBackground(String... params) {
             //Send the photos to the firebase
-            Firebase pdir = mFirebaseRef.child("photos");
-            Firebase mainpage = mFirebaseRef.child("mainpage");
-            Map<Integer, String> photos = new HashMap<Integer, String>();
-            photos.put(0, params[0]);
-            photos.put(1, params[1]);
-            photos.put(2, params[2]);
-            photos.put(3, params[3]);
-            photos.put(4, params[4]);
+            Firebase pdir = mFirebaseRef.child("Images");
+            Firebase mainpage = mFirebaseRef.child("FrontPage");
+            Map<String, String> photos = new HashMap<String, String>();
+            photos.put("0", params[0]);
+            photos.put("1", params[1]);
+            photos.put("2", params[2]);
+            photos.put("3", params[3]);
+            photos.put("4", params[4]);
+            AuthData authData = mFirebaseRef.getAuth();
+            Map<String, String> thumbnail = new HashMap<String, String>();
+            //Thumbnail
+            thumbnail.put("Encoded", params[0]);
+            thumbnail.put("User", authData.getUid());
+
+            Firebase thumb = mainpage.push();
+            thumb.setValue(thumbnail);
+            String key = thumb.getKey();
+            //Set up the main photo
+            thumbnail.put("IMG_TAG", key);
+            pdir.child(authData.getUid()).child(key).setValue(photos);
+
+
             //Some how get the users email!
             //Add all the photos to the ("general photos section") YAY! REDUNDANCY! WITH THE PUSH
             //Firebase user = pdir.child(user_string);
@@ -190,7 +241,7 @@ public class GeneralPageActivity extends AppCompatActivity {
                     String path = params[0].get(x).getLastPathSegment();
                     path = path.substring(path.indexOf("/"));
                     path = "/storage/emulated/0/document" + path;
-                    System.out.println(path);
+                    //System.out.println(path);
                     //InputStream inputStream = new FileInputStream("/storage/emulated/0/document/" + path);
                     Bitmap bMap = BitmapFactory.decodeFile(path);
                     String tmp = encodeToBase64(bMap, Bitmap.CompressFormat.JPEG, 100);

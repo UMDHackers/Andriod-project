@@ -29,8 +29,14 @@ public class TabManager extends TabActivity {
         profileIcon.setImageResource(R.drawable.profile);
 
 
+//        tab1.setIndicator(homeIcon);
+//        profileIntent.putExtra("uid", getIntent().getStringExtra("uid"));
+//        tab1.setContent(new Intent(this, GeneralPageActivity.class));
+
+        Intent generalIntent = new Intent(this, GeneralPageActivity.class);
+        generalIntent.putExtra("uid", getIntent().getStringExtra("uid"));
         tab1.setIndicator(homeIcon);
-        tab1.setContent(new Intent(this, GeneralPageActivity.class));
+        tab1.setContent(generalIntent);
 
         Intent profileIntent = new Intent(this, ProfileActivity.class);
         profileIntent.putExtra("uid", getIntent().getStringExtra("uid"));

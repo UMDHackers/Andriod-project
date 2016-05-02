@@ -1,6 +1,7 @@
 package com.finalproject.cmsc436.timelap;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -19,10 +20,10 @@ public class ImageAdapter extends BaseAdapter {
     private static final int WIDTH = 250;
     private static final int HEIGHT = 250;
     private Context mContext;
-    private List<Integer> mThumbIds;
+    private List<Bitmap> mThumbIds;
 
     // Store the list of image IDs
-    public ImageAdapter(Context c, List<Integer> ids) {
+    public ImageAdapter(Context c, List<Bitmap> ids) {
         mContext = c;
         this.mThumbIds = ids;
     }
@@ -43,7 +44,7 @@ public class ImageAdapter extends BaseAdapter {
     // is passed to OnItemClickListener.onItemClick()
     @Override
     public long getItemId(int position) {
-        return mThumbIds.get(position);
+        return (position);
     }
 
     // Return an ImageView for each item referenced by the Adapter
@@ -59,8 +60,8 @@ public class ImageAdapter extends BaseAdapter {
             imageView.setPadding(PADDING, PADDING, PADDING, PADDING);
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
         }
-
-        imageView.setImageResource(mThumbIds.get(position));
+        System.out.println("HERE? " + mThumbIds.get(position).toString());
+        imageView.setImageBitmap(mThumbIds.get(position));
         return imageView;
     }
 }

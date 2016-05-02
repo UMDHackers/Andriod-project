@@ -1,6 +1,7 @@
 package com.finalproject.cmsc436.timelap;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -21,8 +22,10 @@ import com.firebase.client.ValueEventListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 
 public class ProfileActivity extends AppCompatActivity {
+
 
     private final String TAG = "ProfileActivity";
     private final int UPLOAD_PROFILE_IMAGE = 1;
@@ -30,15 +33,8 @@ public class ProfileActivity extends AppCompatActivity {
     private Firebase mFirebaseRef;
     private String mUserID, mUsername, mEmail;
 
-    private ArrayList<Integer> mProfileIds = new ArrayList<Integer>(
-            Arrays.asList(R.drawable.street, R.drawable.mount,
-                    R.drawable.star, R.drawable.sun)
-    );
-    private ArrayList<String> videoPaths = new ArrayList<String >(
-            Arrays.asList("/sdcard/Download/City.mp4", "/sdcard/Download/Mountain.mp4",
-                    "/sdcard/Download/Stars.mp4", "/sdcard/Download/Sun.mp4")
-    );
-
+    private HashMap<String, Bitmap> mThumbnailsIdsPhotos = new HashMap<String, Bitmap>();
+    private HashMap<String, String> mThumbnailsIdsUsers = new HashMap<String, String>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,50 +46,50 @@ public class ProfileActivity extends AppCompatActivity {
         mFirebaseRef = new Firebase("https://timelap.firebaseio.com");
 
         // Retrieve the uid from previous activities intent
-        mUserID = getIntent().getStringExtra("uid");
+//        mUserID = getIntent().getStringExtra("uid");
 
         // Set the TextView.
-        mFirebaseRef.child("users").child(mUserID).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                // NOTE: this is a callback method, you won't be able to save the data outside the scope.
-                mEmail = dataSnapshot.child("email").getValue() + "";
-                mUsername = (dataSnapshot.child("username").getValue() + "").toUpperCase();
-                TextView emailView = (TextView) findViewById(R.id.profile_email);
-                TextView usernameView = (TextView) findViewById(R.id.profile_username);
-                emailView.setText(mEmail);
-                usernameView.setText(mUsername);
-            }
-
-            @Override
-            public void onCancelled(FirebaseError firebaseError) {
-                Toast.makeText(getApplicationContext(), "user info not found", Toast.LENGTH_LONG).show();
-            }
-        });
+//        mFirebaseRef.child("users").child(mUserID).addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                // NOTE: this is a callback method, you won't be able to save the data outside the scope.
+//                mEmail = dataSnapshot.child("email").getValue() + "";
+//                mUsername = (dataSnapshot.child("username").getValue() + "").toUpperCase();
+//                TextView emailView = (TextView) findViewById(R.id.profile_email);
+//                TextView usernameView = (TextView) findViewById(R.id.profile_username);
+//                emailView.setText(mEmail);
+//                usernameView.setText(mUsername);
+//            }
+//
+//            @Override
+//            public void onCancelled(FirebaseError firebaseError) {
+//                Toast.makeText(getApplicationContext(), "user info not found", Toast.LENGTH_LONG).show();
+//            }
+//        });
 
 
         ImageView profileImage = (ImageView) findViewById(R.id.user_img);
 
 
-
-        GridView gridView = (GridView) findViewById(R.id.gridView);
-        gridView.setAdapter(new ImageAdapter(this, mProfileIds));
-
-        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View v,
-                                    int position, long id) {
-
-                //Create an Intent to start the ImageViewActivity
-                Intent intent = new Intent(ProfileActivity.this,
-                        ViewVideoActivity.class);
-                //same idea here as in the general page idea
-                // Add the ID of the thumbnail to display as an Intent Extra
-                intent.putExtra("POS", videoPaths.get(position));
-
-                // Start the ImageViewActivity
-                startActivity(intent);
-            }
-        });
+//
+//        GridView gridView = (GridView) findViewById(R.id.gridView);
+//        gridView.setAdapter(new ImageAdapter(this, m));
+//
+//        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            public void onItemClick(AdapterView<?> parent, View v,
+//                                    int position, long id) {
+//
+//                //Create an Intent to start the ImageViewActivity
+//                Intent intent = new Intent(ProfileActivity.this,
+//                        ViewVideoActivity.class);
+//                //same idea here as in the general page idea
+//                // Add the ID of the thumbnail to display as an Intent Extra
+//                intent.putExtra("POS", videoPaths.get(position));
+//
+//                // Start the ImageViewActivity
+//                startActivity(intent);
+//            }
+//        });
 
         // if user selects the profile image
         profileImage.setOnClickListener(new View.OnClickListener() {
