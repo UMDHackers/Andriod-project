@@ -119,9 +119,9 @@ public class ProfileActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Log.i(TAG, "profile image clicked");
 
-                Intent gallery = new Intent(Intent.ACTION_PICK,
-                                MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                startActivityForResult(gallery, UPLOAD_PROFILE_IMAGE);
+                Intent photoPickerIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                photoPickerIntent.setType("image/*");
+                startActivityForResult(photoPickerIntent, UPLOAD_PROFILE_IMAGE);
             }
         });
 

@@ -24,6 +24,7 @@ import android.widget.Toast;
 import com.dropbox.client2.DropboxAPI;
 import com.dropbox.client2.android.AndroidAuthSession;
 import com.dropbox.client2.session.AppKeyPair;
+import com.firebase.client.AuthData;
 import com.firebase.client.Firebase;
 
 import junit.framework.Assert;
@@ -116,6 +117,7 @@ public class GeneralPageActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
         if (requestCode == 3645 && resultCode == RESULT_OK && data != null) {
             String[] filePathColumn = {MediaStore.Images.Media.DATA};
             imagesEncodedList = new ArrayList<String>();
@@ -145,9 +147,9 @@ public class GeneralPageActivity extends AppCompatActivity {
         downloadTask.execute(urisArrayList);
         try {
             String[] encoded = downloadTask.get();
-     //       SendToFireBase task = new SendToFireBase();
-     //       task.execute(encoded);
-     //      task.get();
+            SendToFireBase task = new SendToFireBase();
+            task.execute(encoded);
+            task.get();
 
             //Set up a async task to send the files to the
         } catch (Exception e) {
@@ -160,14 +162,19 @@ public class GeneralPageActivity extends AppCompatActivity {
         @Override
         protected Void doInBackground(String... params) {
             //Send the photos to the firebase
-            Firebase pdir = mFirebaseRef.child("photos");
-            Firebase mainpage = mFirebaseRef.child("mainpage");
+            Firebase photosRef = mFirebaseRef.child("photos");
+            //Firebase mainpage = mFirebaseRef.child("mainpage");
+
             Map<Integer, String> photos = new HashMap<Integer, String>();
             photos.put(0, params[0]);
             photos.put(1, params[1]);
             photos.put(2, params[2]);
             photos.put(3, params[3]);
             photos.put(4, params[4]);
+
+            AuthData authData = mFirebaseRef.getAuth();
+            photosRef.child(authData.getUid()).push().setValue(photos);
+
             //Some how get the users email!
             //Add all the photos to the ("general photos section") YAY! REDUNDANCY! WITH THE PUSH
             //Firebase user = pdir.child(user_string);
