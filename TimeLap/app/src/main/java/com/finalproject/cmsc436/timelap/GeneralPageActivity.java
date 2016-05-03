@@ -64,7 +64,7 @@ public class GeneralPageActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_general_page);
-        list.clear();
+
         //Here is where the firebase will download the photos
         //Firebase ref = mFirebaseRef.child("mainpage");
         //Get all the childern of the mainpage
@@ -89,6 +89,7 @@ public class GeneralPageActivity extends AppCompatActivity {
         thumbs.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                list.clear();
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     System.out.println("postshot " + postSnapshot.getKey());
                     String temp = (String) postSnapshot.child("Encoded").getValue();
@@ -243,6 +244,7 @@ public class GeneralPageActivity extends AppCompatActivity {
 
     protected void onResume() {
         super.onResume();
+
     }
     public class CovertToBase64 extends AsyncTask<ArrayList<Uri>, Void, String[]> {
         @Override

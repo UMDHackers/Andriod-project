@@ -1,5 +1,6 @@
 package com.finalproject.cmsc436.timelap;
 
+import android.content.ClipData;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -31,6 +32,9 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ProfileActivity extends AppCompatActivity {
 
@@ -38,26 +42,24 @@ public class ProfileActivity extends AppCompatActivity {
     private static final int UPLOAD_PROFILE_IMAGE = 1;
     private static final int SUCCESS = 1;
 
-    private Firebase mFirebaseRef;
+
     private String mUserID, mUsername, mEmail;
 
-    private ArrayList<Integer> mProfileIds = new ArrayList<Integer>(
-            Arrays.asList(R.drawable.street, R.drawable.mount,
-                    R.drawable.star, R.drawable.sun)
-    );
-    private ArrayList<String> videoPaths = new ArrayList<String >(
-            Arrays.asList("/sdcard/Download/City.mp4", "/sdcard/Download/Mountain.mp4",
-                    "/sdcard/Download/Stars.mp4", "/sdcard/Download/Sun.mp4")
-    );
-
+    private HashMap<String, Bitmap> mThumbnailsIdsPhotos = new HashMap<String, Bitmap>();
+    private HashMap<String, String> mThumbnailsIdsUsers = new HashMap<String, String>();
+    List<String> imagesEncodedList;
+    private  GridView gridView;
+    private ArrayList<String> mkey = new ArrayList<String>();
+    private ArrayList<Bitmap> list = new ArrayList<Bitmap>();
     private ImageView mProfileImage;
+    private Firebase mFirebaseRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
         //Got through main thumbnails ones and add the photos based on user, so go through whole list of images
-
+        list.clear();
         // initialize Firebase
         mFirebaseRef = new Firebase("https://timelap.firebaseio.com");
 
@@ -87,19 +89,49 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
 
-        GridView gridView = (GridView) findViewById(R.id.gridView);
+        gridView = (GridView) findViewById(R.id.gridView);
         //gridView.setAdapter(new ImageAdapter(this, mProfileIds));
+        Firebase thumbs  = mFirebaseRef.child("FrontPage");
+        Firebase user = mFirebaseRef.child(mUserID);
+        thumbs.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                list.clear();
+                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                    String user = (String) postSnapshot.child("User").getValue();
+                    if(mUserID.equals(user)) {
+                        String temp = (String) postSnapshot.child("Encoded").getValue();
+                        Bitmap temp_bit = decodeBase64(temp);
+                        String key = (String) postSnapshot.getKey();
+                        mThumbnailsIdsPhotos.put(key, temp_bit);
+                        mThumbnailsIdsUsers.put(key, user);
+                        mkey.add(key);
+                        list.add(temp_bit);
+                    }
+                }
+                System.out.println("LIST SIZE " + list.size());
+                gridView.setAdapter(new ImageAdapter(ProfileActivity.this, list));
 
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+            }
+        });
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v,
                                     int position, long id) {
 
-                //Create an Intent to start the ImageViewActivity
                 Intent intent = new Intent(ProfileActivity.this,
                         ViewVideoActivity.class);
-                //same idea here as in the general page idea
+
+                //HERE GET THE ID OF THE thubmnail clicked
                 // Add the ID of the thumbnail to display as an Intent Extra
-                intent.putExtra("POS", videoPaths.get(position));
+                //intent.putExtra(EXTRA_RES_ID, videoPaths.get(position));
+                //GET THE IMAGE AND THEN IDS (USERS AND PHOTOIDS) WITH THE POSTIONS
+                String temp_key = mkey.get(position);
+                intent.putExtra("Key", temp_key);
+                intent.putExtra("User", mUserID);
 
                 // Start the ImageViewActivity
                 startActivity(intent);
@@ -129,15 +161,11 @@ public class ProfileActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent;
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                    intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-                    intent.addCategory(Intent.CATEGORY_OPENABLE);
-                } else {
-                    intent = new Intent(Intent.ACTION_GET_CONTENT);
-                }
-                intent.setType("*/sdcard/Download");
-                startActivityForResult(intent, 3645);
+                Intent intent = new Intent();
+                intent.setType("image/*");
+                intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                startActivityForResult(Intent.createChooser(intent, "Select 5 Pictures"), 3645);
             }
         });
     }
@@ -147,7 +175,22 @@ public class ProfileActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == 3645 && resultCode == RESULT_OK && data != null) {
-            File file = new File(data.getData().getPath());
+            String[] filePathColumn = {MediaStore.Images.Media.DATA};
+            imagesEncodedList = new ArrayList<String>();
+            if (data.getClipData() != null) {
+                ClipData mClipData = data.getClipData();
+                ArrayList<Uri> mArrayUri = new ArrayList<Uri>();
+                for (int i = 0; i < mClipData.getItemCount(); i++) {
+
+                    ClipData.Item item = mClipData.getItemAt(i);
+                    Uri uri = item.getUri();
+                    mArrayUri.add(uri);
+                    Log.i("LOG", "URI " +  uri.toString());
+                    // Get the cursor
+                }
+                Log.v("LOG_TAG", "Selected Images " + mArrayUri.size());
+                upload(mArrayUri);
+            }
             Toast.makeText(this, "uploaded", Toast.LENGTH_SHORT).show();
 
         } else if (requestCode == UPLOAD_PROFILE_IMAGE && resultCode == RESULT_OK && data != null) {
@@ -179,6 +222,61 @@ public class ProfileActivity extends AppCompatActivity {
 
 
     }
+    public void upload(ArrayList<Uri> urisArrayList) {
+        CovertToBase64 downloadTask = new CovertToBase64();
+        downloadTask.execute(urisArrayList);
+        try {
+            String[] encoded = downloadTask.get();
+            SendToFireBase task = new SendToFireBase();
+            task.execute(encoded);
+            task.get();
+
+            //Set up a async task to send the files to the
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+    public class SendToFireBase extends AsyncTask<String, Void, Void>
+    {
+        @Override
+        protected Void doInBackground(String... params) {
+            //Send the photos to the firebase
+
+            Firebase pdir = mFirebaseRef.child("Images");
+            Firebase mainpage = mFirebaseRef.child("FrontPage");
+            Map<String, String> photos = new HashMap<String, String>();
+//            photos.put("0", params[0]);
+//            photos.put("1", params[1]);
+//            photos.put("2", params[2]);
+//            photos.put("3", params[3]);
+//            photos.put("4", params[4]);
+            for(int x =0 ; x <params.length; x++) {
+                photos.put(x+"", params[x]);
+            }
+            AuthData authData = mFirebaseRef.getAuth();
+            Map<String, String> thumbnail = new HashMap<String, String>();
+            //Thumbnail
+            thumbnail.put("Encoded", params[0]);
+            thumbnail.put("User", authData.getUid());
+
+            Firebase thumb = mainpage.push();
+            thumb.setValue(thumbnail);
+            String key = thumb.getKey();
+            //Set up the main photo
+            thumbnail.put("IMG_TAG", key);
+            pdir.child(authData.getUid()).child(key).setValue(photos);
+
+
+            //Some how get the users email!
+            //Add all the photos to the ("general photos section") YAY! REDUNDANCY! WITH THE PUSH
+            //Firebase user = pdir.child(user_string);
+            //user.add to the IDS OF THE MAIN FULL PHOTOS LOCATION
+            //mainpage.add new image string to the front page with a link to the other photos in the all photos
+
+            return null;
+        }
+    }
 
     /*
      * Used to upload profile images asynchronously
@@ -209,7 +307,10 @@ public class ProfileActivity extends AppCompatActivity {
 
         }
     }
-
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
     /*
      * Used to download profile image asynchronously
      */
@@ -246,7 +347,30 @@ public class ProfileActivity extends AppCompatActivity {
             return null;
         }
     }
+    public class CovertToBase64 extends AsyncTask<ArrayList<Uri>, Void, String[]> {
+        @Override
+        protected String[] doInBackground(ArrayList<Uri>... params) {
+            try {
+                String[] array = new String[params[0].size()];
+                for(int x = 0; x < params[0].size(); x++) {
+                    String path = params[0].get(x).getLastPathSegment();
+                    path = path.substring(path.indexOf("/"));
+                    path = "/storage/emulated/0/document" + path;
+                    //System.out.println(path);
+                    //InputStream inputStream = new FileInputStream("/storage/emulated/0/document/" + path);
+                    Bitmap bMap = BitmapFactory.decodeFile(path);
+                    String tmp = encodeToBase64(bMap, Bitmap.CompressFormat.JPEG, 100);
+                    Log.i("images " +x , tmp);
+                    array[x] = tmp;
+                }
+                return array;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
+            return null;
+        }
+    }
     /*
      * Used for encoding and decoing bitmaps to base64 strings
      */
