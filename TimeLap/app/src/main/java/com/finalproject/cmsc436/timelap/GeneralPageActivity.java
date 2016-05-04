@@ -7,7 +7,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -18,29 +17,19 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.dropbox.client2.DropboxAPI;
-import com.dropbox.client2.android.AndroidAuthSession;
-import com.dropbox.client2.session.AppKeyPair;
 import com.firebase.client.AuthData;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
 
-import junit.framework.Assert;
-
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -177,7 +166,7 @@ public class GeneralPageActivity extends AppCompatActivity {
                     // Get the cursor
                 }
                 Log.v("LOG_TAG", "Selected Images " + mArrayUri.size());
-               upload(mArrayUri);
+                upload(mArrayUri);
             }
             Toast.makeText(this, "uploaded", Toast.LENGTH_SHORT).show();
         } else {
@@ -186,9 +175,11 @@ public class GeneralPageActivity extends AppCompatActivity {
 
 
     }
+
     public void upload(ArrayList<Uri> urisArrayList) {
-        CovertToBase64 downloadTask = new CovertToBase64();
+        ConvertToBase64 downloadTask = new ConvertToBase64();
         downloadTask.execute(urisArrayList);
+
         try {
             String[] encoded = downloadTask.get();
             SendToFireBase task = new SendToFireBase();
@@ -199,10 +190,9 @@ public class GeneralPageActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
-    public class SendToFireBase extends AsyncTask<String, Void, Void>
-    {
+
+    public class SendToFireBase extends AsyncTask<String, Void, Void> {
         @Override
         protected Void doInBackground(String... params) {
             //Send the photos to the firebase
@@ -210,14 +200,11 @@ public class GeneralPageActivity extends AppCompatActivity {
             Firebase pdir = mFirebaseRef.child("Images");
             Firebase mainpage = mFirebaseRef.child("FrontPage");
             Map<String, String> photos = new HashMap<String, String>();
-//            photos.put("0", params[0]);
-//            photos.put("1", params[1]);
-//            photos.put("2", params[2]);
-//            photos.put("3", params[3]);
-//            photos.put("4", params[4]);
+
             for(int x =0 ; x <params.length; x++) {
                 photos.put(x+"", params[x]);
             }
+
             AuthData authData = mFirebaseRef.getAuth();
             Map<String, String> thumbnail = new HashMap<String, String>();
             //Thumbnail
@@ -248,41 +235,42 @@ public class GeneralPageActivity extends AppCompatActivity {
 
     protected void onResume() {
         super.onResume();
-
     }
-    public class CovertToBase64 extends AsyncTask<ArrayList<Uri>, Void, String[]> {
+
+    public class ConvertToBase64 extends AsyncTask<ArrayList<Uri>, Void, String[]> {
+
         @Override
         protected String[] doInBackground(ArrayList<Uri>... params) {
-            try {
-                String[] array = new String[params[0].size()];
-                for(int x = 0; x < params[0].size(); x++) {
-                    String path = params[0].get(x).getLastPathSegment();
-                    path = path.substring(path.indexOf("/"));
-                    path = "/storage/emulated/0/document" + path;
-                    //System.out.println(path);
-                    //InputStream inputStream = new FileInputStream("/storage/emulated/0/document/" + path);
-                    Bitmap bMap = BitmapFactory.decodeFile(path);
-                    String tmp = encodeToBase64(bMap, Bitmap.CompressFormat.JPEG, 100);
-                    Log.i("images " +x , tmp);
-                    array[x] = tmp;
-                }
-                return array;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
 
-            return null;
+            final ArrayList<Uri> imagesUri = params[0];
+            String[] encodedImageArray = new String[imagesUri.size()];
+            int i = 0;
+
+            for (Uri imageUri : imagesUri) {
+                try {
+                    final InputStream imageStream = getContentResolver().openInputStream(imageUri);
+                    final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
+
+                    String encodedImage = encodeToBase64(selectedImage, Bitmap.CompressFormat.JPEG, 100);
+                    encodedImageArray[i] = encodedImage;
+
+                    i++;
+
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+            return encodedImageArray;
         }
     }
-    public static String encodeToBase64(Bitmap image, Bitmap.CompressFormat compressFormat, int quality)
-    {
+
+    public static String encodeToBase64(Bitmap image, Bitmap.CompressFormat compressFormat, int quality) {
         ByteArrayOutputStream byteArrayOS = new ByteArrayOutputStream();
         image.compress(compressFormat, quality, byteArrayOS);
         return Base64.encodeToString(byteArrayOS.toByteArray(), Base64.DEFAULT);
     }
 
-    public static Bitmap decodeBase64(String input)
-    {
+    public static Bitmap decodeBase64(String input) {
         byte[] decodedBytes = Base64.decode(input, 0);
         return BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
     }

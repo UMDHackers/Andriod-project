@@ -6,7 +6,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -28,11 +27,9 @@ import com.firebase.client.AuthData;
 import com.firebase.client.ValueEventListener;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,14 +38,16 @@ public class ProfileActivity extends AppCompatActivity {
 
     private static final String TAG = "ProfileActivity";
     private static final int UPLOAD_PROFILE_IMAGE = 1;
+    private static final int UPLOAD_TIMELAPSE = 2;
     private static final int SUCCESS = 1;
-
 
     private String mUserID, mUsername, mEmail;
 
     private HashMap<String, Bitmap> mThumbnailsIdsPhotos = new HashMap<String, Bitmap>();
     private HashMap<String, String> mThumbnailsIdsUsers = new HashMap<String, String>();
+
     List<String> imagesEncodedList;
+
     private  GridView gridView;
     private ArrayList<String> mkey = new ArrayList<String>();
     private ArrayList<Bitmap> list = new ArrayList<Bitmap>();
@@ -92,6 +91,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         gridView = (GridView) findViewById(R.id.gridView);
         //gridView.setAdapter(new ImageAdapter(this, mProfileIds));
+
         Firebase thumbs  = mFirebaseRef.child("FrontPage");
         Firebase user = mFirebaseRef.child(mUserID);
         thumbs.addValueEventListener(new ValueEventListener() {
@@ -153,16 +153,17 @@ public class ProfileActivity extends AppCompatActivity {
                 Log.i(TAG, "profile image clicked");
                 AuthData authData = mFirebaseRef.getAuth();
 
-//                if (mUserID.equals(authData.getUid())) {
+                if (mUserID.equals(authData.getUid())) {
                     Intent photoPickerIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
                     photoPickerIntent.setType("image/*");
                     startActivityForResult(photoPickerIntent, UPLOAD_PROFILE_IMAGE);
-//                } else {
-//                    Toast.makeText(getApplicationContext(), "Not Your Profile", Toast.LENGTH_SHORT).show();
-//                }
+               } else {
+                    Toast.makeText(getApplicationContext(), "Not Your Profile", Toast.LENGTH_SHORT).show();
+               }
             }
         });
 
+        // upload time lapse button pressed
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -171,7 +172,7 @@ public class ProfileActivity extends AppCompatActivity {
                 intent.setType("image/*");
                 intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
                 intent.setAction(Intent.ACTION_GET_CONTENT);
-                startActivityForResult(Intent.createChooser(intent, "Select 5 Pictures"), 3645);
+                startActivityForResult(Intent.createChooser(intent, "Select 5 Pictures"), UPLOAD_TIMELAPSE);
             }
         });
     }
@@ -180,7 +181,7 @@ public class ProfileActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == 3645 && resultCode == RESULT_OK && data != null) {
+        if (requestCode == UPLOAD_TIMELAPSE && resultCode == RESULT_OK && data != null) {
             String[] filePathColumn = {MediaStore.Images.Media.DATA};
             imagesEncodedList = new ArrayList<String>();
             if (data.getClipData() != null) {
@@ -202,7 +203,6 @@ public class ProfileActivity extends AppCompatActivity {
         } else if (requestCode == UPLOAD_PROFILE_IMAGE && resultCode == RESULT_OK && data != null) {
 
             if (data.getData() != null) {
-                String filePath = data.getData().getPath();
                 Log.i(TAG, "path is " + data.getData().getPath());
 
                 try {
@@ -229,7 +229,7 @@ public class ProfileActivity extends AppCompatActivity {
 
     }
     public void upload(ArrayList<Uri> urisArrayList) {
-        CovertToBase64 downloadTask = new CovertToBase64();
+        ConvertToBase64 downloadTask = new ConvertToBase64();
         downloadTask.execute(urisArrayList);
         try {
             String[] encoded = downloadTask.get();
@@ -253,14 +253,11 @@ public class ProfileActivity extends AppCompatActivity {
             Firebase mainpage = mFirebaseRef.child("FrontPage");
             Firebase likes = mFirebaseRef.child("Likes");
             Map<String, String> photos = new HashMap<String, String>();
-//            photos.put("0", params[0]);
-//            photos.put("1", params[1]);
-//            photos.put("2", params[2]);
-//            photos.put("3", params[3]);
-//            photos.put("4", params[4]);
+
             for(int x =0 ; x <params.length; x++) {
                 photos.put(x+"", params[x]);
             }
+
             AuthData authData = mFirebaseRef.getAuth();
             Map<String, String> thumbnail = new HashMap<String, String>();
             //Thumbnail
@@ -357,29 +354,45 @@ public class ProfileActivity extends AppCompatActivity {
             return null;
         }
     }
-    public class CovertToBase64 extends AsyncTask<ArrayList<Uri>, Void, String[]> {
+    public class ConvertToBase64 extends AsyncTask<ArrayList<Uri>, Void, String[]> {
+
         @Override
         protected String[] doInBackground(ArrayList<Uri>... params) {
-            try {
-                String[] array = new String[params[0].size()];
-                for(int x = 0; x < params[0].size(); x++) {
-                    String path = params[0].get(x).getLastPathSegment();
-                    path = path.substring(path.indexOf("/"));
-                    Log.i(TAG, "doInBackground: " + Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES));
-                    path = "/storage/emulated/0/document" + path;
-                    //System.out.println(path);
-                    //InputStream inputStream = new FileInputStream("/storage/emulated/0/document/" + path);
-                    Bitmap bMap = BitmapFactory.decodeFile(path);
-                    String tmp = encodeToBase64(bMap, Bitmap.CompressFormat.JPEG, 100);
-                    Log.i("images " +x , tmp);
-                    array[x] = tmp;
-                }
-                return array;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+//<<<<<<< HEAD
+//            try {
+//                String[] array = new String[params[0].size()];
+//                for(int x = 0; x < params[0].size(); x++) {
+//                    String path = params[0].get(x).getLastPathSegment();
+//                    path = path.substring(path.indexOf("/"));
+//                    Log.i(TAG, "doInBackground: " + Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES));
+//                    path = "/storage/emulated/0/document" + path;
+//                    //System.out.println(path);
+//                    //InputStream inputStream = new FileInputStream("/storage/emulated/0/document/" + path);
+//                    Bitmap bMap = BitmapFactory.decodeFile(path);
+//                    String tmp = encodeToBase64(bMap, Bitmap.CompressFormat.JPEG, 100);
+//                    Log.i("images " +x , tmp);
+//                    array[x] = tmp;
+//=======
+            final ArrayList<Uri> imagesUri = params[0];
+            String[] encodedImageArray = new String[imagesUri.size()];
+            int i = 0;
 
-            return null;
+            for (Uri imageUri : imagesUri) {
+                try {
+                    final InputStream imageStream = getContentResolver().openInputStream(imageUri);
+                    final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
+
+                    String encodedImage = encodeToBase64(selectedImage, Bitmap.CompressFormat.JPEG, 100);
+                    encodedImageArray[i] = encodedImage;
+
+                    i++;
+
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+//>>>>>>> 0d6c6705dbd2aaec8b3f785194cb2e39949eaee6
+                }
+            }
+            return encodedImageArray;
         }
     }
     /*
