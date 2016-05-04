@@ -11,18 +11,37 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.finalproject.cmsc436.timelap.GeneralPageActivity"
     tools:showIn="@layout/activity_general_page">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Feed"
+        android:id="@+id/textView"
 
+        android:layout_alignParentStart="true" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#000000"
+        android:id="@+id/line4"
+        android:layout_below="@+id/textView"
+
+    />
     <GridView
+        android:paddingTop="30dp"
         android:id="@+id/gridView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentEnd="true"
         android:columnWidth="90dp"
         android:gravity="center"
-        android:horizontalSpacing="10dp"
+        android:horizontalSpacing="5dp"
         android:numColumns="auto_fit"
         android:stretchMode="columnWidth"
-        android:verticalSpacing="10dp">
+        android:verticalSpacing="5dp"
+        android:layout_below="@+id/line4">
 
     </GridView>
+
+
 </RelativeLayout>

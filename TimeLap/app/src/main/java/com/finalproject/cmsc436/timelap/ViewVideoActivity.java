@@ -13,8 +13,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Base64;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.MediaController;
+import android.widget.TextView;
 import android.widget.VideoView;
 
 import com.firebase.client.DataSnapshot;
@@ -22,33 +24,47 @@ import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
 
+import org.w3c.dom.Text;
+
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class ViewVideoActivity extends AppCompatActivity {
 
     VideoView vid;
     AnimationDrawable anim = new AnimationDrawable();
+    TextView mLikes;
+    TextView mAuthor;
+    Button mButton, mPause;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.video_view);
+
         final ImageView animation = (ImageView) findViewById(R.id.imageAnim);
+        mLikes = (TextView) findViewById(R.id.likes);
+        mAuthor = (TextView) findViewById(R.id.Author);
+        mButton = (Button) findViewById(R.id.button);
+        mPause = (Button) findViewById(R.id.anim_button);
         //Get a fire base ref to get the photos and decode them and then send them to the surface view
         //Need to set up slideshow in andriod for the photos
         Firebase myFirebaseRef = new Firebase("https://timelap.firebaseio.com/");
         Firebase imageRef = myFirebaseRef.child("Images");
-        String image_id = getIntent().getStringExtra("Key");
-        String user_id = getIntent().getStringExtra("User");
+        final Firebase likeRef = myFirebaseRef.child("Likes");
+        final String image_id = getIntent().getStringExtra("Key");
+        final String user_id = getIntent().getStringExtra("User");
         Firebase users = imageRef.child(user_id);
         Firebase image = users.child(image_id);
-        System.out.println("HERE!!");
+        Firebase our_user = myFirebaseRef.child("users").child(user_id);
+
+//        System.out.println("HERE!!");
         image.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 int x = 0;
-                for(DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                    System.out.println("ID " + postSnapshot.getKey() + " " + postSnapshot.getValue());
+                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                    //System.out.println("ID " + postSnapshot.getKey() + " " + postSnapshot.getValue());
                     String temp = (String) postSnapshot.getValue();
                     Bitmap temp_bit = decodeBase64(temp);
                     Drawable d = new BitmapDrawable(getResources(), temp_bit);
@@ -67,22 +83,65 @@ public class ViewVideoActivity extends AppCompatActivity {
 
             }
         });
-        //GET ALL THE IMAGES
-//        ArrayList<String> images;
-//        for(int x = 0; x < images.size(); x++) {
-            //decode all the photos
-            //Make drawables
-            //Drawable d = new BitmapDrawable(getResources(), bitmap);
-//        }
-//        AnimationDrawable anim = new AnimationDrawable();
-//        anim.addFrame(d,2);
+        final Firebase child_likes = likeRef.child(image_id);
+        final Firebase likesRef = child_likes.child("Likes");
+
+        our_user.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                mAuthor.setText("TimeLap Taken By: @" + ((String) dataSnapshot.child("username").getValue()));
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
+            }
+        });
+
+        final Firebase user_like = likeRef.child(image_id);
+
+        user_like.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                mLikes.setText("Likes:" + ((String) dataSnapshot.child("Likes").getValue()));
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
+            }
+        });
+        mButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String str = mLikes.getText().toString();
+                int x = Integer.parseInt(str.substring(str.indexOf(":") + 1)) + 1;
+                user_like.child("Likes").setValue(x + "");
+            }
+        });
+        mAuthor.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent profileIntent = new Intent(ViewVideoActivity.this, ProfileActivity.class);
+                profileIntent.putExtra("uid", user_id);
+                startActivity(profileIntent);
+            }
+        });
+        mPause.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mPause.getText().toString().equals("Pause")) {
+                    anim.stop();
+                    mPause.setText("Play");
+                } else {
+                    anim.setOneShot(false);
+                    anim.start();
+                    mPause.setText("Pause");
+                }
 
 
-        //if you want the animation to loop, set false
-//        anim.setOneShot(false);
-//        anim.start();
-
-
+            }
+        });
     }
     public static String encodeToBase64(Bitmap image, Bitmap.CompressFormat compressFormat, int quality)
     {

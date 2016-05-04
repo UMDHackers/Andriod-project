@@ -5,6 +5,46 @@
 
     <ImageView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="300dp"
+        android:layout_gravity="center_horizontal"
         android:id="@+id/imageAnim"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Likes:0"
+        android:id="@+id/likes"
+        android:layout_gravity="center_horizontal"
+        android:layout_below = "@+id/imageAnim"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TimeLap Taken By: @"
+        android:gravity="left"
+        android:id="@+id/Author"
+        android:layout_gravity="center_horizontal"
+        android:layout_below = "@+id/likes"
+        />
+    <RelativeLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="LIKE"
+            android:id="@+id/button"/>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Pause"
+
+            android:id="@+id/anim_button"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true" />
+
+    </RelativeLayout>
+
 </LinearLayout>

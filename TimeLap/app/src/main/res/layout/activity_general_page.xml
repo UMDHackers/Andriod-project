@@ -6,7 +6,6 @@
     android:fitsSystemWindows="true"
     tools:context="com.finalproject.cmsc436.timelap.GeneralPageActivity">
 
-
     <include layout="@layout/content_general_page" />
 
     <android.support.design.widget.FloatingActionButton

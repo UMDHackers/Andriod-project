@@ -206,7 +206,7 @@ public class GeneralPageActivity extends AppCompatActivity {
         @Override
         protected Void doInBackground(String... params) {
             //Send the photos to the firebase
-
+            Firebase likes = mFirebaseRef.child("Likes");
             Firebase pdir = mFirebaseRef.child("Images");
             Firebase mainpage = mFirebaseRef.child("FrontPage");
             Map<String, String> photos = new HashMap<String, String>();
@@ -230,6 +230,10 @@ public class GeneralPageActivity extends AppCompatActivity {
             //Set up the main photo
             thumbnail.put("IMG_TAG", key);
             pdir.child(authData.getUid()).child(key).setValue(photos);
+
+            HashMap<String, String> map = new HashMap<String, String>();
+            map.put("Likes", "0");
+            likes.child(key).setValue(map);
 
 
             //Some how get the users email!

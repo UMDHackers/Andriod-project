@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -150,10 +151,15 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Log.i(TAG, "profile image clicked");
+                AuthData authData = mFirebaseRef.getAuth();
 
-                Intent photoPickerIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-                photoPickerIntent.setType("image/*");
-                startActivityForResult(photoPickerIntent, UPLOAD_PROFILE_IMAGE);
+//                if (mUserID.equals(authData.getUid())) {
+                    Intent photoPickerIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                    photoPickerIntent.setType("image/*");
+                    startActivityForResult(photoPickerIntent, UPLOAD_PROFILE_IMAGE);
+//                } else {
+//                    Toast.makeText(getApplicationContext(), "Not Your Profile", Toast.LENGTH_SHORT).show();
+//                }
             }
         });
 
@@ -217,7 +223,7 @@ public class ProfileActivity extends AppCompatActivity {
                 Toast.makeText(this, "no image selected", Toast.LENGTH_SHORT).show();
             }
         } else {
-            Toast.makeText(this, "Sorry video not uploadable", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Sorry image(s) not uploadable", Toast.LENGTH_SHORT).show();
         }
 
 
@@ -245,6 +251,7 @@ public class ProfileActivity extends AppCompatActivity {
 
             Firebase pdir = mFirebaseRef.child("Images");
             Firebase mainpage = mFirebaseRef.child("FrontPage");
+            Firebase likes = mFirebaseRef.child("Likes");
             Map<String, String> photos = new HashMap<String, String>();
 //            photos.put("0", params[0]);
 //            photos.put("1", params[1]);
@@ -267,6 +274,9 @@ public class ProfileActivity extends AppCompatActivity {
             thumbnail.put("IMG_TAG", key);
             pdir.child(authData.getUid()).child(key).setValue(photos);
 
+            HashMap<String, String> map = new HashMap<String, String>();
+            map.put("Likes", "0");
+            likes.child(key).setValue(map);
 
             //Some how get the users email!
             //Add all the photos to the ("general photos section") YAY! REDUNDANCY! WITH THE PUSH
@@ -289,7 +299,7 @@ public class ProfileActivity extends AppCompatActivity {
 
             // send the photos to the firebase
             AuthData authData = mFirebaseRef.getAuth();
-            Firebase userRef = mFirebaseRef.child("users").child(authData.getUid());
+            Firebase userRef = mFirebaseRef.child("users").child(mUserID);
 
             userRef.child("image").setValue(encodedImage);
 
@@ -319,7 +329,7 @@ public class ProfileActivity extends AppCompatActivity {
         protected Void doInBackground(String... params) {
 
             final AuthData authData = mFirebaseRef.getAuth();
-            Firebase userRef = mFirebaseRef.child("users").child(authData.getUid());
+            Firebase userRef = mFirebaseRef.child("users").child(mUserID);
             Firebase imageRef = userRef.child("image");
 
             // create the Firebase listener to retrieve data
@@ -355,6 +365,7 @@ public class ProfileActivity extends AppCompatActivity {
                 for(int x = 0; x < params[0].size(); x++) {
                     String path = params[0].get(x).getLastPathSegment();
                     path = path.substring(path.indexOf("/"));
+                    Log.i(TAG, "doInBackground: " + Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES));
                     path = "/storage/emulated/0/document" + path;
                     //System.out.println(path);
                     //InputStream inputStream = new FileInputStream("/storage/emulated/0/document/" + path);
