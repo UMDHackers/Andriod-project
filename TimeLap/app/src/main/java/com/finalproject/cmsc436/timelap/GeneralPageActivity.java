@@ -251,7 +251,7 @@ public class GeneralPageActivity extends AppCompatActivity {
                     final InputStream imageStream = getContentResolver().openInputStream(imageUri);
                     final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
 
-                    String encodedImage = encodeToBase64(selectedImage, Bitmap.CompressFormat.JPEG, 100);
+                    String encodedImage = encodeToBase64(selectedImage, Bitmap.CompressFormat.JPEG, 75);
                     encodedImageArray[i] = encodedImage;
 
                     i++;
