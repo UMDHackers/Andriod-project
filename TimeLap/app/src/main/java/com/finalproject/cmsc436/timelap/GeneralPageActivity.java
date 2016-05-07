@@ -49,11 +49,12 @@ public class GeneralPageActivity extends AppCompatActivity {
     private  GridView gridView;
     private ArrayList<String> mkey = new ArrayList<String>();
     private ArrayList<Bitmap> list = new ArrayList<Bitmap>();
+    final String TAG =("com.finalproject");
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_general_page);
-
+        Log.i(TAG, "onCreate: inmain");
         //Here is where the firebase will download the photos
         //Firebase ref = mFirebaseRef.child("mainpage");
         //Get all the childern of the mainpage
@@ -251,7 +252,7 @@ public class GeneralPageActivity extends AppCompatActivity {
                     final InputStream imageStream = getContentResolver().openInputStream(imageUri);
                     final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
 
-                    String encodedImage = encodeToBase64(selectedImage, Bitmap.CompressFormat.JPEG, 75);
+                    String encodedImage = encodeToBase64(selectedImage, Bitmap.CompressFormat.JPEG, 65);
                     encodedImageArray[i] = encodedImage;
 
                     i++;

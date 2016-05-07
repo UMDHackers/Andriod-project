@@ -7,16 +7,20 @@ import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Base64;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.MediaController;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.firebase.client.DataSnapshot;
@@ -36,17 +40,24 @@ public class ViewVideoActivity extends AppCompatActivity {
     AnimationDrawable anim = new AnimationDrawable();
     TextView mLikes;
     TextView mAuthor;
-    Button mButton, mPause;
+    Button mButton, mPause, mDownload;
+    ListView mList;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.video_view);
 
         final ImageView animation = (ImageView) findViewById(R.id.imageAnim);
+        mDownload = (Button) findViewById(R.id.download);
         mLikes = (TextView) findViewById(R.id.likes);
         mAuthor = (TextView) findViewById(R.id.Author);
         mButton = (Button) findViewById(R.id.button);
         mPause = (Button) findViewById(R.id.anim_button);
+        mList = (ListView) findViewById(R.id.Comments);
+        String[] values = new String[] {"@Yoni: Nice Video dude!", "@Parth: Where was this taken?", "@Ben: I think that's California", "@Parth: OK that makes sense", "@Stan: It was near the google building"};
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,  android.R.layout.simple_list_item_1, android.R.id.text1 ,values);
+        mList.setAdapter(adapter);
+
         //Get a fire base ref to get the photos and decode them and then send them to the surface view
         //Need to set up slideshow in andriod for the photos
         Firebase myFirebaseRef = new Firebase("https://timelap.firebaseio.com/");
@@ -133,13 +144,24 @@ public class ViewVideoActivity extends AppCompatActivity {
                 if(mPause.getText().toString().equals("Pause")) {
                     anim.stop();
                     mPause.setText("Play");
+                    mDownload.setVisibility(View.VISIBLE);
                 } else {
+                    mDownload.setVisibility(View.INVISIBLE);
                     anim.setOneShot(false);
                     anim.start();
                     mPause.setText("Pause");
                 }
 
 
+            }
+        });
+        mDownload.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Drawable d = anim.getFrame(0);
+                Bitmap bitmap = ((BitmapDrawable)d).getBitmap();
+                MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "Timelap.Picture."+user_id, "PICTURE");
+                Toast.makeText(getApplicationContext(), "Downloaded", Toast.LENGTH_SHORT).show();
             }
         });
     }

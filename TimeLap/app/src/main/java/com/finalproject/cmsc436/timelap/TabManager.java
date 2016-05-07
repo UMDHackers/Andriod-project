@@ -20,14 +20,15 @@ public class TabManager extends TabActivity {
 
         TabHost.TabSpec tab1 = tabHost.newTabSpec("Home");
         TabHost.TabSpec tab2 = tabHost.newTabSpec("Profile");
-
+        TabHost.TabSpec tab3 = tabHost.newTabSpec("Chat");
 
         //ImageView Setup
         ImageView homeIcon = new ImageView(this);
         homeIcon.setImageResource(R.drawable.home);
         ImageView profileIcon = new ImageView(this);
         profileIcon.setImageResource(R.drawable.profile);
-
+        ImageView chatIcon = new ImageView(this);
+        chatIcon.setImageResource(R.drawable.chat);
 
 //        tab1.setIndicator(homeIcon);
 //        profileIntent.putExtra("uid", getIntent().getStringExtra("uid"));
@@ -43,9 +44,15 @@ public class TabManager extends TabActivity {
         tab2.setIndicator(profileIcon);
         tab2.setContent(profileIntent);
 
+        Intent chatIntent = new Intent(this, ChatActivity.class);
+        chatIntent.putExtra("uid", getIntent().getStringExtra("uid"));
+        tab3.setIndicator(chatIcon);
+        tab3.setContent(chatIntent);
+
         /** Add the tabs  to the TabHost to display. */
         tabHost.addTab(tab1);
         tabHost.addTab(tab2);
+        tabHost.addTab(tab3);
     }
 
     @Override
