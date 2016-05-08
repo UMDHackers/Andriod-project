@@ -8,7 +8,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:background="#D1C4E9"
+    android:background="#f0f0f5"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.finalproject.cmsc436.timelap.GeneralPageActivity"
     tools:showIn="@layout/activity_general_page">
@@ -16,10 +16,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Feed"
+        android:text="TimeLap"
         android:fontFamily="sans-serif-condensed"
         android:id="@+id/textView"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
@@ -34,12 +35,11 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentEnd="true"
-        android:columnWidth="90dp"
         android:gravity="center"
-        android:horizontalSpacing="5dp"
-        android:numColumns="auto_fit"
+        android:horizontalSpacing="0dp"
+        android:numColumns="3"
         android:stretchMode="columnWidth"
-        android:verticalSpacing="5dp"
+        android:verticalSpacing="0dp"
         android:layout_below="@+id/line4">
 
     </GridView>

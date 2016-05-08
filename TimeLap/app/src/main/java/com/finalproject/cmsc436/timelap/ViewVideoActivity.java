@@ -16,6 +16,7 @@ import android.util.Base64;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.MediaController;
@@ -51,7 +52,7 @@ public class ViewVideoActivity extends AppCompatActivity {
         mDownload = (Button) findViewById(R.id.download);
         mLikes = (TextView) findViewById(R.id.likes);
         mAuthor = (TextView) findViewById(R.id.Author);
-        mButton = (Button) findViewById(R.id.button);
+        ImageButton mButton = (ImageButton) findViewById(R.id.button);
         mPause = (Button) findViewById(R.id.anim_button);
         mList = (ListView) findViewById(R.id.Comments);
         String[] values = new String[] {"@Yoni: Nice Video dude!", "@Parth: Where was this taken?", "@Ben: I think that's California", "@Parth: OK that makes sense", "@Stan: It was near the google building"};

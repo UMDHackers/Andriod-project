@@ -2,13 +2,14 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#A5D6A7">
+    android:background="#cce6ff">
 
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="300dp"
         android:layout_gravity="center_horizontal"
         android:id="@+id/imageAnim"/>
+
 
     <TextView
         android:layout_width="wrap_content"
@@ -36,28 +37,32 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="20dp">
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="30dp"
 
-            android:text="LIKE"
-            android:background="#9CCC65"
-            android:id="@+id/button"/>
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="30dp"
             android:text="Pause"
-            android:background="#9CCC65"
+            android:background="#1a8cff"
             android:id="@+id/anim_button"
-            android:layout_alignParentTop="true"
+            android:layout_alignBottom="@+id/button"
             android:layout_alignParentEnd="true" />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/heart"
+            android:background="@android:color/transparent"
+            android:id="@+id/button"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="30dp" />
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="30dp"
             android:text="Download"
-            android:background="#9CCC65"
+            android:background="#1a8cff"
             android:layout_gravity="right"
             android:id="@+id/download"
             android:layout_alignTop="@+id/anim_button"
@@ -76,6 +81,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id= "@+id/Comments"
-        android:background="#81C784"></ListView>
+        android:background="#1a8cff"></ListView>
 
 </LinearLayout>
