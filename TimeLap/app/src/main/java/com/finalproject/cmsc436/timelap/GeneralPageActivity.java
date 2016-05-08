@@ -80,6 +80,9 @@ public class GeneralPageActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 list.clear();
+                mThumbnailsIdsPhotos.clear();
+                mThumbnailsIdsUsers.clear();
+                mkey.clear();
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     System.out.println("postshot " + postSnapshot.getKey());
                     String temp = (String) postSnapshot.child("Encoded").getValue();

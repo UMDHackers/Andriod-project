@@ -98,6 +98,9 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 list.clear();
+                mThumbnailsIdsPhotos.clear();
+                mThumbnailsIdsUsers.clear();
+                mkey.clear();
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     String user = (String) postSnapshot.child("User").getValue();
                     if(mUserID.equals(user)) {
