@@ -36,10 +36,10 @@
         android:layout_height="match_parent"
         android:layout_alignParentEnd="true"
         android:gravity="center"
-        android:horizontalSpacing="0dp"
+        android:horizontalSpacing="10dp"
         android:numColumns="3"
         android:stretchMode="columnWidth"
-        android:verticalSpacing="0dp"
+        android:verticalSpacing="10dp"
         android:layout_below="@+id/line4">
 
     </GridView>
